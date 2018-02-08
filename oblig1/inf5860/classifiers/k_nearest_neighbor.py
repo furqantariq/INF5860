@@ -46,8 +46,6 @@ class KNearestNeighbor(object):
 
 
 
-
-
   def compute_distances(self, X):
     """
     Compute the distance between each test point in X and each training point
@@ -78,10 +76,9 @@ class KNearestNeighbor(object):
     #                                     #
     #########################################################################
 
-
-
-    pass
-
+    for x in range(0,num_test):
+        for y in range(0,num_train):
+            dists[x,y] = np.sqrt(np.sum(np.square(X[x,:]-self.X_train[y,:])))
 
     #########################################################################
     #                         END OF YOUR CODE                              #
@@ -118,11 +115,8 @@ class KNearestNeighbor(object):
       #########################################################################
 
       #closest_y = []
-
-      pass
-
-
-
+      closest_y = self.y_train[np.argsort(dists[i,:])[0:k]]
+ 
       #########################################################################
       # TODO:                                                                 #
       # Now that you have found the labels of the k nearest neighbors, you    #
@@ -132,7 +126,10 @@ class KNearestNeighbor(object):
       #########################################################################
 
       #y_pred[i] = []...
-
+      uniques, counts = np.unique(closest_y,return_counts=True)
+      idx_max = np.argwhere(counts == counts.max())      
+      y_pred[i] = np.min(uniques[idx_max])
+      
       #########################################################################
       #                           END OF YOUR CODE                            #
       #########################################################################
