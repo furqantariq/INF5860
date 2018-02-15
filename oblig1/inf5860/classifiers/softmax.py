@@ -33,14 +33,22 @@ def softmax_loss_naive(W, X, y, reg):
   #dw = []
                 
   scores = np.dot(X,W)
-  loss_i =0.0
-  (N,D) = scores.shape
+  prob = np.zeros_like(scores)
+  (N,C) = scores.shape
+  
   for j in range(N):
-        yj  = y[j]
-        for k in range(D):
-                loss_i = 
-
-
+      scores[j]-=np.max(scores[j])
+      for k in range(C):
+          prob[j][k] = np.exp(scores[j][k]) / np.sum(np.exp(scores[j]))
+      yj = y[j]
+      loss_i = -np.log(prob[j][yj])
+      loss += loss_i
+      prob[j][yj] -=1
+  prob /= N
+  loss = loss/N + 0.5*reg*np.sum(W*W)
+  dW = np.dot(X.T,prob) + reg*W
+               
+                
 
   #############################################################################
   #                          END OF YOUR CODE                                 #
@@ -48,6 +56,7 @@ def softmax_loss_naive(W, X, y, reg):
 
   return loss, dW
 
+    
 
 def softmax_loss_vectorized(W, X, y, reg):
   """
@@ -67,6 +76,17 @@ def softmax_loss_vectorized(W, X, y, reg):
   #############################################################################
   #loss = []
   #dW = []
+  
+  N = X.shape[0]
+  scores = np.dot(X,W)
+  scores -= np.max(scores,axis=1,keepdims=True)
+  prob = np.exp(scores)
+  prob /= np.sum(prob, axis=1, keepdims=True)
+  loss = np.sum(-np.log(prob[np.arange(N),y]))/N + 0.5*reg*np.sum(W*W)
+  prob[np.arange(N),y]-=1
+  prob/=N
+  dW = np.dot(X.T,prob)+reg*W    
+     
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
